@@ -1,10 +1,12 @@
 using MassTransit;
+using MassTransit.Definition;
 using MassTransitLearn.Components.Consumers;
 using MassTransitLearn.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace MassTransitLearn
@@ -21,33 +23,14 @@ namespace MassTransitLearn
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //var inMemoryBus = Bus.Factory.CreateUsingInMemory(busFactoryConfig =>{
-            //    busFactoryConfig.ReceiveEndpoint("queue_name", ep =>
-            //    {
-            //        //configure the endpoint
-            //    });
-            //});
-
-            //services.AddMassTransit(config =>
-            //{
-            //    config.AddBus(provider => inMemoryBus);
-            //    config.AddConsumer<SubmitOrderConsumer>();
-            //    config.AddRequestClient<SubmitOrder>();
-            //});
-
-
-            //services.AddMassTransit(cfg =>
-            //{
-            //    cfg.AddConsumer<SubmitOrderConsumer>();
-            //    cfg.AddRequestClient<SubmitOrder>();
-            //    cfg.UsingInMemory();
-            //});
-            services.AddMediator(x =>
-            {
-                x.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
-                x.AddRequestClient<SubmitOrder>();
+            services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
+            services.AddMassTransit(mt => {
+                mt.UsingRabbitMq((context, cfg) => {
+                    cfg.Host("localhost");
+                });
+                mt.AddRequestClient<SubmitOrder>();
             });
-
+            services.AddMassTransitHostedService();
 
             // Register the Swagger services
             services.AddSwaggerDocument();

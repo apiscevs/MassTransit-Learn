@@ -1,0 +1,1 @@
+https://www.programmingwithwolfgang.com/rabbitmq-in-an-asp-net-core-3-1-microservice/
