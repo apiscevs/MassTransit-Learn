@@ -15,12 +15,15 @@ namespace MassTransitLearn.Controllers
     {
         private readonly ILogger<OrderController> _logger;
         private readonly IRequestClient<SubmitOrder> _submitOrderRequestClient;
+        private readonly ISendEndpointProvider _submitOrderEndpointProvider;
 
         public OrderController(ILogger<OrderController> logger,
-            IRequestClient<SubmitOrder> submitOrderRequestClient)
+            IRequestClient<SubmitOrder> submitOrderRequestClient,
+            ISendEndpointProvider submitOrderEndpointProvider)
         {
             _logger = logger;
             _submitOrderRequestClient = submitOrderRequestClient;
+            _submitOrderEndpointProvider = submitOrderEndpointProvider;
         }
 
         [HttpPost]
@@ -44,6 +47,20 @@ namespace MassTransitLearn.Controllers
                 var response = await rejected;
                 return BadRequest(response.Message);
             }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(Guid id, string customerNumber)
+        {
+            var endpoint = await _submitOrderEndpointProvider.GetSendEndpoint(new Uri("exchange:submit-order"));
+
+            await endpoint.Send<SubmitOrder>(new
+            {
+                OrderId = id,
+                Timestamp = InVar.Timestamp,
+                CustomerNumber = customerNumber
+            });
+            return Accepted();
         }
     }
 }

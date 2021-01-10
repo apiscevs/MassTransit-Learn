@@ -21,24 +21,29 @@ namespace MassTransitLearn.Components.Consumers
         {
             _logger.Log(LogLevel.Debug, "SubmitOrderConsumer: {CustomerNumber}", context.Message.CustomerNumber);
 
-            if (context.Message.CustomerNumber.ToLowerInvariant().Contains("test"))
+            if (context.ResponseAddress != null)
             {
-                await context.RespondAsync<OrderSubmitionRejected>(new
+                if (context.Message.CustomerNumber.ToLowerInvariant().Contains("test"))
+                {
+                    await context.RespondAsync<OrderSubmitionRejected>(new
+                    {
+                        InVar.Timestamp,
+                        OrderId = context.Message.OrderId,
+                        CustomerNumber = context.Message.CustomerNumber,
+                        Reason = $"Test customers cannot receive orders: {context.Message.CustomerNumber}"
+                    });
+                    return;
+                }
+                await context.RespondAsync<OrderSubmitionAccepted>(new
                 {
                     InVar.Timestamp,
                     OrderId = context.Message.OrderId,
-                    CustomerNumber = context.Message.CustomerNumber,
-                    Reason = $"Test customers cannot receive orders: {context.Message.CustomerNumber}"
+                    CustomerNumber = context.Message.CustomerNumber
                 });
-                return;
-            }
-
-            await context.RespondAsync<OrderSubmitionAccepted>(new
+            } else
             {
-                InVar.Timestamp,
-                OrderId = context.Message.OrderId,
-                CustomerNumber = context.Message.CustomerNumber
-            });
+                //just save, no response
+            }
         }
     }
 }

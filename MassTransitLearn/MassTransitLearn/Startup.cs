@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace MassTransitLearn
 {
@@ -28,7 +29,9 @@ namespace MassTransitLearn
                 mt.UsingRabbitMq((context, cfg) => {
                     cfg.Host("localhost");
                 });
-                mt.AddRequestClient<SubmitOrder>();
+                mt.AddRequestClient<SubmitOrder>(new Uri($"exchange:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
+                mt.AddRequestClient<SubmitOrder>()
+                //mt.AddRequestClient<SubmitOrder>(new Uri($"queue:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
             });
             services.AddMassTransitHostedService();
 
