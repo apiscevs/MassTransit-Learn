@@ -35,8 +35,9 @@ namespace MassTransitLearn.WinService
                 {
                     cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
 
-                    cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
-                        .RedisRepository();
+                    cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
+                        .RedisRepository(t=> { t.ConcurrencyMode = MassTransit.RedisIntegration.ConcurrencyMode.Optimistic;  
+                        });
 
                     cfg.AddBus(ConfigureBus);
                 });
