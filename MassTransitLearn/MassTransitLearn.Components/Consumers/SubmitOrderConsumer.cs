@@ -34,6 +34,14 @@ namespace MassTransitLearn.Components.Consumers
                     });
                     return;
                 }
+
+                await context.Publish<OrderSubmitted>(new
+                {
+                    context.Message.OrderId,
+                    InVar.Timestamp,
+                    context.Message.CustomerNumber
+                });
+
                 await context.RespondAsync<OrderSubmitionAccepted>(new
                 {
                     InVar.Timestamp,

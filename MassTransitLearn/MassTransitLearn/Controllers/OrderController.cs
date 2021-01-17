@@ -15,14 +15,17 @@ namespace MassTransitLearn.Controllers
     {
         private readonly ILogger<OrderController> _logger;
         private readonly IRequestClient<SubmitOrder> _submitOrderRequestClient;
+        private readonly IRequestClient<CheckOrder> _checkOrderClient;
         private readonly ISendEndpointProvider _submitOrderEndpointProvider;
 
         public OrderController(ILogger<OrderController> logger,
             IRequestClient<SubmitOrder> submitOrderRequestClient,
+            IRequestClient<CheckOrder> checkOrderClient,
             ISendEndpointProvider submitOrderEndpointProvider)
         {
             _logger = logger;
             _submitOrderRequestClient = submitOrderRequestClient;
+            _checkOrderClient = checkOrderClient;
             _submitOrderEndpointProvider = submitOrderEndpointProvider;
         }
 
@@ -61,6 +64,26 @@ namespace MassTransitLearn.Controllers
                 CustomerNumber = customerNumber
             });
             return Accepted();
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult> Get(Guid id)
+        {
+            var (status, notFound) = await _checkOrderClient.GetResponse<OrderStatus, OrderNotFound>(new
+            {
+                OrderId = id
+            });
+
+            if (status.IsCompletedSuccessfully)
+            {
+                var response = await status;
+                return Ok(response.Message);
+            } else
+            {
+                var response = await notFound;
+                return NotFound(response.Message);
+            }
         }
     }
 }
