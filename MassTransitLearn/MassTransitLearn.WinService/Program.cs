@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using MassTransit.Definition;
 using MassTransitLearn.Components.Consumers;
+using MassTransitLearn.Components.StateMachine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -33,6 +34,10 @@ namespace MassTransitLearn.WinService
                 services.AddMassTransit(cfg =>
                 {
                     cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
+
+                    cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                        .RedisRepository();
+
                     cfg.AddBus(ConfigureBus);
                 });
 
