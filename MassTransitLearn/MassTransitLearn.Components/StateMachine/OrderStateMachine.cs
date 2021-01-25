@@ -21,6 +21,8 @@ namespace MassTransitLearn.Components.StateMachine
                     }
                 }));
             });
+            //need to setup mongo, as redis do not support queries
+            //Event(() => CustomerAccountClosedEvent, x => x.CorrelateBy((saga, context) => saga.CustomerNumber == context.Message.CustomerNumber));
 
             //setup to store current state in this property
             InstanceState(x => x.CurrentState);
@@ -34,7 +36,10 @@ namespace MassTransitLearn.Components.StateMachine
                 })
                 .TransitionTo(OrderSubmitedState));
 
-            During(OrderSubmitedState, Ignore(OrderSubmittedEvent));
+            During(OrderSubmitedState, 
+                Ignore(OrderSubmittedEvent),
+                When(CustomerAccountClosedEvent)
+                    .TransitionTo(CanceledState));
 
             DuringAny(
                 When(OrderSubmittedEvent)
@@ -55,7 +60,10 @@ namespace MassTransitLearn.Components.StateMachine
         }
 
         public State OrderSubmitedState { get; private set; }
+        public State CanceledState { get; private set; }
+
         public Event<OrderSubmitted> OrderSubmittedEvent { get; private set; }
         public Event<CheckOrder> OrderStatusRequestedEvent { get; private set; }
+        public Event<CustomerAccountClosed> CustomerAccountClosedEvent { get; private set; }
     }
 }

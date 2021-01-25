@@ -81,5 +81,46 @@ namespace MasstransitLearn.Components.Tests
                 await harness.Stop();
             }
         }
+
+        [Test]
+        public async Task Should_cancel_when_customer_account_closed()
+        {
+            var orderStateMachine = new OrderStateMachine();
+            var harness = new InMemoryTestHarness();
+            var saga = harness.StateMachineSaga<OrderState, OrderStateMachine>(new OrderStateMachine());
+            await harness.Start();
+
+            try
+            {
+                var orderId = NewId.NextGuid();
+                await harness.Bus.Publish<OrderSubmitted>(new
+                {
+                    OrderId = orderId,
+                    Timestamp = InVar.Timestamp,
+                    CustomerNumber = "cust number"
+                });
+
+                var instanceId = await saga.Exists(orderId, t => t.OrderSubmitedState);
+                Assert.That(instanceId, Is.Not.Null);
+
+                var instance = saga.Sagas.Contains(instanceId.Value);
+                Assert.That(instance.CustomerNumber, Is.EqualTo("cust number"));
+
+                await harness.Bus.Publish<CustomerAccountClosed>(new
+                {
+                    CustomerId = InVar.Id,
+                    CustomerNumber = "cust number"
+                });
+
+                instanceId = await saga.Exists(orderId, t => t.CanceledState);
+
+                Assert.That(instanceId, Is.Not.Null);
+
+            }
+            finally
+            {
+                await harness.Stop();
+            }
+        }
     }
 }
