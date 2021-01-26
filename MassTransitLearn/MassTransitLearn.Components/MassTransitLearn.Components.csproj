@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="7.1.2" />
     <PackageReference Include="MassTransit.Analyzers" Version="7.1.2" />
+    <PackageReference Include="MassTransit.MongoDb" Version="7.1.2" />
     <PackageReference Include="MassTransit.Redis" Version="7.1.2" />
   </ItemGroup>
 

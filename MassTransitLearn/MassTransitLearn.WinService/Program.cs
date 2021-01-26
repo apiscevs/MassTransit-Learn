@@ -36,8 +36,10 @@ namespace MassTransitLearn.WinService
                     cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
 
                     cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
-                        .RedisRepository(t=> { t.ConcurrencyMode = MassTransit.RedisIntegration.ConcurrencyMode.Optimistic;  
-                        });
+                    .MongoDbRepository(t=> {
+                        t.Connection = "mongodb://127.0.0.1";
+                        t.DatabaseName = "orderdb";
+                    });
 
                     cfg.AddBus(ConfigureBus);
                 });
