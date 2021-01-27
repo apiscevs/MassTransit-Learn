@@ -1,4 +1,6 @@
-﻿using MassTransit;
+﻿using Automatonymous.Graphing;
+using Automatonymous.Visualizer;
+using MassTransit;
 using MassTransit.Testing;
 using MassTransitLearn.Components.StateMachine;
 using MassTransitLearn.Contracts;
@@ -121,6 +123,57 @@ namespace MasstransitLearn.Components.Tests
             {
                 await harness.Stop();
             }
+        }
+
+        [Test]
+        public async Task Should_accept_when_order_is_accepted()
+        {
+            var orderStateMachine = new OrderStateMachine();
+            var harness = new InMemoryTestHarness();
+            var saga = harness.StateMachineSaga<OrderState, OrderStateMachine>(new OrderStateMachine());
+            await harness.Start();
+
+            try
+            {
+                var orderId = NewId.NextGuid();
+                await harness.Bus.Publish<OrderSubmitted>(new
+                {
+                    OrderId = orderId,
+                    Timestamp = InVar.Timestamp,
+                    CustomerNumber = "cust number"
+                });
+
+                var instanceId = await saga.Exists(orderId, t => t.OrderSubmitedState);
+                Assert.That(instanceId, Is.Not.Null);
+
+                var instance = saga.Sagas.Contains(instanceId.Value);
+                Assert.That(instance.CustomerNumber, Is.EqualTo("cust number"));
+
+                await harness.Bus.Publish<OrderAccepted>(new
+                {
+                    OrderId = orderId,
+                    Timestamp = InVar.Timestamp
+                });
+
+                instanceId = await saga.Exists(orderId, t => t.AcceptedState);
+
+                Assert.That(instanceId, Is.Not.Null);
+
+            }
+            finally
+            {
+                await harness.Stop();
+            }
+        }
+
+        [Test]
+        public void Show_me_the_state_machine_graph()
+        {
+            var orderStateMachine = new OrderStateMachine();
+            var graph = orderStateMachine.GetGraph();
+            var generator = new StateMachineGraphvizGenerator(graph);
+            string dots = generator.CreateDotFile();
+            Console.WriteLine(dots);
         }
     }
 }

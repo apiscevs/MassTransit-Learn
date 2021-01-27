@@ -1,5 +1,6 @@
 ﻿using Automatonymous;
 using MassTransit;
+using MassTransitLearn.Components.StateMachine.OrderStateMachineActivities;
 using MassTransitLearn.Contracts;
 using System;
 
@@ -11,6 +12,8 @@ namespace MassTransitLearn.Components.StateMachine
         {
             //setup what property to use to correlate message
             Event(() => OrderSubmittedEvent, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => OrderAcceptedEvent, x => x.CorrelateById(m => m.Message.OrderId));
+
             Event(() => OrderStatusRequestedEvent, x => {
                 x.CorrelateById(m => m.Message.OrderId);
                 x.OnMissingInstance(m => m.ExecuteAsync(async context =>
@@ -39,7 +42,11 @@ namespace MassTransitLearn.Components.StateMachine
             During(OrderSubmitedState, 
                 Ignore(OrderSubmittedEvent),
                 When(CustomerAccountClosedEvent)
-                    .TransitionTo(CanceledState));
+                    .TransitionTo(CanceledState),
+                When(OrderAcceptedEvent)
+                    .Activity(t => t.OfType<AcceptOrderActivity>())
+                    .TransitionTo(AcceptedState)
+                    );
 
             During(CanceledState,
                 Ignore(CustomerAccountClosedEvent));
@@ -64,8 +71,10 @@ namespace MassTransitLearn.Components.StateMachine
 
         public State OrderSubmitedState { get; private set; }
         public State CanceledState { get; private set; }
+        public State AcceptedState { get; private set; }
 
         public Event<OrderSubmitted> OrderSubmittedEvent { get; private set; }
+        public Event<OrderAccepted> OrderAcceptedEvent { get; private set; }
         public Event<CheckOrder> OrderStatusRequestedEvent { get; private set; }
         public Event<CustomerAccountClosed> CustomerAccountClosedEvent { get; private set; }
     }
