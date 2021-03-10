@@ -3,8 +3,6 @@ using MassTransitLearn.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MassTransitLearn.Controllers
@@ -17,16 +15,19 @@ namespace MassTransitLearn.Controllers
         private readonly IRequestClient<SubmitOrder> _submitOrderRequestClient;
         private readonly IRequestClient<CheckOrder> _checkOrderClient;
         private readonly ISendEndpointProvider _submitOrderEndpointProvider;
+        private readonly IPublishEndpoint _publishEndpoint;
 
         public OrderController(ILogger<OrderController> logger,
             IRequestClient<SubmitOrder> submitOrderRequestClient,
             IRequestClient<CheckOrder> checkOrderClient,
-            ISendEndpointProvider submitOrderEndpointProvider)
+            ISendEndpointProvider submitOrderEndpointProvider,
+            IPublishEndpoint publishEndpoint)
         {
             _logger = logger;
             _submitOrderRequestClient = submitOrderRequestClient;
             _checkOrderClient = checkOrderClient;
             _submitOrderEndpointProvider = submitOrderEndpointProvider;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpPost]
@@ -66,6 +67,17 @@ namespace MassTransitLearn.Controllers
             return Accepted();
         }
 
+        [HttpPatch]
+        public async Task<IActionResult> Patch(Guid id)
+        {
+            await _publishEndpoint.Publish<OrderAccepted>(new
+            {
+                OrderId = id,
+                Timestamp = InVar.Timestamp
+            });
+
+            return Accepted();
+        }
 
         [HttpGet]
         public async Task<ActionResult> Get(Guid id)

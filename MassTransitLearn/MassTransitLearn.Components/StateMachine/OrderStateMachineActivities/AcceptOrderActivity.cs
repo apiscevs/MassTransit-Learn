@@ -1,10 +1,9 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Automatonymous;
 using GreenPipes;
+using MassTransit;
 using MassTransitLearn.Contracts;
 
 namespace MassTransitLearn.Components.StateMachine.OrderStateMachineActivities
@@ -18,8 +17,17 @@ namespace MassTransitLearn.Components.StateMachine.OrderStateMachineActivities
 
         public async Task Execute(BehaviorContext<OrderState, OrderAccepted> context, Behavior<OrderState, OrderAccepted> next)
         {
-            //do something later
             Console.WriteLine($"Hello from activity {context.Data.OrderId}");
+
+            var consumeContext = context.GetPayload<ConsumeContext>();
+
+            var sendEndpoint = await consumeContext.GetSendEndpoint(new Uri("exchange:fullfill-order"));
+
+            await sendEndpoint.Send<FullfillOrder>(new
+            {
+                OrderId = context.Data.OrderId
+            });
+
             await next.Execute(context).ConfigureAwait(false);
         }
 

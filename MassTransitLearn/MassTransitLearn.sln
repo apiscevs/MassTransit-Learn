@@ -11,7 +11,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassTransitLearn.Components
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassTransitLearn.WinService", "MassTransitLearn.WinService\MassTransitLearn.WinService.csproj", "{EFF6D496-9043-49D7-82FA-56A00B517531}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasstransitLearn.Components.Tests", "MasstransitLearn.Components.Tests\MasstransitLearn.Components.Tests.csproj", "{C98249A5-336C-4F88-BC6B-5D09C13E9FF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MasstransitLearn.Components.Tests", "MasstransitLearn.Components.Tests\MasstransitLearn.Components.Tests.csproj", "{C98249A5-336C-4F88-BC6B-5D09C13E9FF2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Warehouse", "Warehouse", "{1B2ACB1F-ABA5-4D98-A2EC-DE3A1971ED59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Contracts", "Warehouse.Contracts\Warehouse.Contracts.csproj", "{775A55FE-8203-44A4-8522-BD2855EEBD80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Service", "Warehouse.Service\Warehouse.Service.csproj", "{6E4087C2-CD3D-477C-BF9C-0532E49092F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Components", "Warehouse.Components\Warehouse.Components.csproj", "{BF736853-B81F-46E8-9D9B-AB234DFA3295}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,9 +47,26 @@ Global
 		{C98249A5-336C-4F88-BC6B-5D09C13E9FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C98249A5-336C-4F88-BC6B-5D09C13E9FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C98249A5-336C-4F88-BC6B-5D09C13E9FF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{775A55FE-8203-44A4-8522-BD2855EEBD80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{775A55FE-8203-44A4-8522-BD2855EEBD80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{775A55FE-8203-44A4-8522-BD2855EEBD80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{775A55FE-8203-44A4-8522-BD2855EEBD80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E4087C2-CD3D-477C-BF9C-0532E49092F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E4087C2-CD3D-477C-BF9C-0532E49092F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E4087C2-CD3D-477C-BF9C-0532E49092F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E4087C2-CD3D-477C-BF9C-0532E49092F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF736853-B81F-46E8-9D9B-AB234DFA3295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF736853-B81F-46E8-9D9B-AB234DFA3295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF736853-B81F-46E8-9D9B-AB234DFA3295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF736853-B81F-46E8-9D9B-AB234DFA3295}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{775A55FE-8203-44A4-8522-BD2855EEBD80} = {1B2ACB1F-ABA5-4D98-A2EC-DE3A1971ED59}
+		{6E4087C2-CD3D-477C-BF9C-0532E49092F8} = {1B2ACB1F-ABA5-4D98-A2EC-DE3A1971ED59}
+		{BF736853-B81F-46E8-9D9B-AB234DFA3295} = {1B2ACB1F-ABA5-4D98-A2EC-DE3A1971ED59}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6CE27CD-1812-4A12-8E00-6E111F4E1CEF}

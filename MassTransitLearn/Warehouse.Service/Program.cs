@@ -1,9 +1,5 @@
 ﻿using MassTransit;
 using MassTransit.Definition;
-using MassTransitLearn.Components.Consumers;
-using MassTransitLearn.Components.CourierActivities;
-using MassTransitLearn.Components.StateMachine;
-using MassTransitLearn.Components.StateMachine.OrderStateMachineActivities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -11,9 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Warehouse.Contracts;
+using Warehouse.Components;
 
-namespace MassTransitLearn.WinService
+namespace Warehouse.Service
 {
     class Program
     {
@@ -34,25 +30,14 @@ namespace MassTransitLearn.WinService
             {
                 services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
-                services.AddScoped<AcceptOrderActivity>();
-
                 services.AddMassTransit(cfg =>
                 {
-                    cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
-                    cfg.AddActivitiesFromNamespaceContaining<AllocateInventoryActivity>();
-                    
-                    cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
-                    .MongoDbRepository(t=> {
-                        t.Connection = "mongodb://127.0.0.1";
-                        t.DatabaseName = "orderdb";
-                    });
+                    cfg.AddConsumersFromNamespaceContaining<AllocateInventoryConsumer>();
 
                     cfg.AddBus(ConfigureBus);
-
-                    cfg.AddRequestClient<AllocateInventory>();
                 });
 
-                 services.AddHostedService<MassTransitConsoleHostedService>();
+                services.AddHostedService<MassTransitConsoleHostedService>();
             })
             .ConfigureLogging((hostingContext, logging) =>
             {
